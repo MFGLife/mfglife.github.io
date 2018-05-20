@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+
+    <title>MFGlife.org</title>
+
+
+      <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+
+  <html lang="en" class="no-js"><head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
+    <html class="no-js" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+    <META NAME="KEYWORDS" CONTENT="Micheal, Micheal Salmon, Chat, Chatbot, Kansas, Kansas City, KC, KCMO, stocks, crypto, cryptocurrency, Salmon">
+    <META NAME="ROBOTS" CONTENT="ALL,FOLLOW">
+
+        <meta name="description" content="Life Adjuvant">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" sizes="180x180" href="https://storage.googleapis.com/www.mfglife.org/mlife.jpg">
+            <link rel="icon" type="image/png" href="https://storage.googleapis.com/www.mfglife.org/mlife.jpg" sizes="32x32">
+            <link rel="icon" type="image/png" href="https://storage.googleapis.com/www.mfglife.org/mlife.jpg" sizes="16x16">
+            <link rel="mask-icon" href="https://storage.googleapis.com/www.mfglife.org/mlife.jpg" color="#5bbad5">
+            <link rel="shortcut icon" href="https://storage.googleapis.com/www.mfglife.org/mlife.jpg">
+		<link href="https://fonts.googleapis.com/css?family=Raleway:200,400,800" rel="stylesheet" type="text/css">
+		<!--[if IE]>
+		<script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+
+<style>
+.vresponse {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	color: #f9f1e9;
+	text-align: center;
+	top: 60%;
+	left: 50%;
+	-webkit-transform: translate3d(-50%,-50%,0);
+	transform: translate3d(-50%,-50%,0);
+  z-index:15;
+}
+</style>
+
+
+    <script src="https://storage.googleapis.com/www.mfglife.org/homepage/js/annyang.js"></script>
+     <script>
+     "use strict";
+
+     // first we make sure annyang started succesfully
+     if (annyang) {
+
+       // define the functions our commands will run.
+       var hello = function() {
+         document.getElementById('vresp').innerHTML = 'Hello';
+       };
+       var getStarted = function() {
+         document.getElementById('vresp').innerHTML = 'You are about to take your first steps, start with saying growth or culture.';
+       };
+       var growth = function() {
+         document.getElementById('vresp').innerHTML = 'We all need a little education and guidance when it comes to technology, Micheal is building the support system now.';
+       };
+       var life = function() {
+         document.getElementById('vresp').innerHTML = 'Yes, I can hear you. What is going on?';
+       };
+       var culture = function() {
+         document.getElementById('vresp').innerHTML = 'Kansas City is the most represented place in Kansas and Missouri. We arent limited to just one city, we are actually located in Overland Park.';
+       };
+       var micheal = function() {
+         window.location.href = 'http://michealsalmon.tumblr.com/';
+       };
+       var dashboard = function() {
+         window.location.href = 'https://mfglife.tumblr.com/';
+       };
+       var help = function() {
+         document.getElementById('vresp').innerHTML = 'Here is a basic list of commands to get you started, Hello, Get Started, Growth, Culture, Life, Micheal, Dashboard.';
+       };
+
+       // define our commands.
+       // * The key is the phrase you want your users to say.
+       // * The value is the action to do.
+       //   You can pass a function, a function name (as a string), or write your function as part of the commands object.
+       var commands = {
+         'hello (there)': hello,
+         'let\'s get started': getStarted,
+         'growth (say)': growth,
+         'life (manufacturing)': life,
+         'culture': culture,
+         'micheal (michael)': micheal,
+         'dashboard (portfolio)': dashboard,
+         'help (commands)': help,
+
+
+       };
+
+       // OPTIONAL: activate debug mode for detailed logging in the console
+       annyang.debug();
+
+       // Add voice commands to respond to
+       annyang.addCommands(commands);
+
+       // OPTIONAL: Set a language for speech recognition (defaults to English)
+       // For a full list of language codes, see the documentation:
+       // https://github.com/TalAter/annyang/blob/master/docs/FAQ.md#what-languages-are-supported
+       annyang.setLanguage('en');
+
+       // Start listening. You can call this here, or attach this call to an event, button, etc.
+       annyang.start();
+     } else {
+       $(document).ready(function() {
+         $('#unsupported').fadeIn('fast');
+       });
+     }
+
+     </script>
+
+
+	<body data-pinterest-extension-installed="cr1.3.4" cz-shortcut-listen="true">
+		<div class="container demo-1">
+			<div class="content">
+				<div id="large-header" class="large-header" style="height: 775px;">
+					<canvas id="demo-canvas" width="941" height="775"></canvas>
+
+					<h1 class="main-title"><a onclick="buttonclick()" style="color:white; text-decoration:none;">mfg</a><span class="thin"><a href="https://storage.googleapis.com/www.mfglife.org/index.html" style="color:white; text-decoration:none;">LIFE</a></span></h1>
+<p id="vresp" class="vresponse">Click MFG to enable audio, or Life for a chatbot.</p>
+        </div>
+
+
+			</div>
+			<!-- Related demos -->
+
+		</div><!-- /container -->
+
+<!-- For the demo ad only -->
+
+</body></html>
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script  src="js/index.js"></script>
+
+<script>
+// Prefer camera resolution nearest to 1280x720. add after true  , video: { width: 1280, height: 720 }
+
+function buttonclick(){
+
+var constraints = { audio: true};
+
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(mediaStream) {
+  var video = document.querySelector('video');
+  video.srcObject = mediaStream;
+  video.onloadedmetadata = function(e) {
+    video.play();
+  };
+})
+
+document.getElementById('vresp').innerHTML = 'Say LETS GET STARTED or HELP to begin.';
+
+}
+</script>
+
+
+
+</body>
+
+</html>
