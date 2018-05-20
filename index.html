@@ -56,11 +56,6 @@
 
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-    //! annyang
-    //! version : 2.6.0
-    //! author  : Tal Ater @TalAter
-    //! license : MIT
-    //! https://www.TalAter.com/annyang/
     (function (root, factory) {
       'use strict';
 
@@ -79,15 +74,7 @@
     })(typeof window !== 'undefined' ? window : undefined, function (root, undefined) {
       'use strict';
 
-      /**
-       * # Quick Tutorial, Intro and Demos
-       *
-       * The quickest way to get started is to visit the [annyang homepage](https://www.talater.com/annyang/).
-       *
-       * For a more in-depth look at annyang, read on.
-       *
-       * # API Reference
-       */
+
 
       var annyang;
 
@@ -216,7 +203,7 @@
          * @method init
          * @deprecated
          * @see [Commands Object](#commands-object)
-         */
+         **/
         init: function init(commands) {
           var resetCommands = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
@@ -718,29 +705,6 @@
      *   $('#greeting').text('Hello!');
      * }
      * </script>
-     * ````
-     *
-     * ### Using Regular Expressions in commands
-     * For advanced commands, you can pass a regular expression object, instead of
-     * a simple string command.
-     *
-     * This is done by passing an object containing two properties: `regexp`, and
-     * `callback` instead of the function.
-     *
-     * #### Examples:
-     * ````javascript
-     * var calculateFunction = function(month) { console.log(month); }
-     * var commands = {
-     *   // This example will accept any word as the "month"
-     *   'calculate :month stats': calculateFunction,
-     *   // This example will only accept months which are at the start of a quarter
-     *   'calculate :quarter stats': {'regexp': /^calculate (January|April|July|October) stats$/, 'callback': calculateFunction}
-     * }
-     ````
-     *
-     */
-    //# sourceMappingURL=annyang.js.map
-    </script>
      <script>
      "use strict";
 
