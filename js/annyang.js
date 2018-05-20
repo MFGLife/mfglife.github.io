@@ -621,68 +621,68 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   return annyang;
 });
 
-/**
- * # Good to Know
- *
- * ## Commands Object
- *
- * Both the [init()]() and addCommands() methods receive a `commands` object.
- *
- * annyang understands commands with `named variables`, `splats`, and `optional words`.
- *
- * * Use `named variables` for one word arguments in your command.
- * * Use `splats` to capture multi-word text at the end of your command (greedy).
- * * Use `optional words` or phrases to define a part of the command as optional.
- *
- * #### Examples:
- * ````html
- * <script>
- * var commands = {
- *   // annyang will capture anything after a splat (*) and pass it to the function.
- *   // e.g. saying "Show me Batman and Robin" will call showFlickr('Batman and Robin');
- *   'show me *tag': showFlickr,
- *
- *   // A named variable is a one word variable, that can fit anywhere in your command.
- *   // e.g. saying "calculate October stats" will call calculateStats('October');
- *   'calculate :month stats': calculateStats,
- *
- *   // By defining a part of the following command as optional, annyang will respond
- *   // to both: "say hello to my little friend" as well as "say hello friend"
- *   'say hello (to my little) friend': greeting
- * };
- *
- * var showFlickr = function(tag) {
- *   var url = 'http://api.flickr.com/services/rest/?tags='+tag;
- *   $.getJSON(url);
- * }
- *
- * var calculateStats = function(month) {
- *   $('#stats').text('Statistics for '+month);
- * }
- *
- * var greeting = function() {
- *   $('#greeting').text('Hello!');
- * }
- * </script>
- * ````
- *
- * ### Using Regular Expressions in commands
- * For advanced commands, you can pass a regular expression object, instead of
- * a simple string command.
- *
- * This is done by passing an object containing two properties: `regexp`, and
- * `callback` instead of the function.
- *
- * #### Examples:
- * ````javascript
- * var calculateFunction = function(month) { console.log(month); }
- * var commands = {
- *   // This example will accept any word as the "month"
- *   'calculate :month stats': calculateFunction,
- *   // This example will only accept months which are at the start of a quarter
- *   'calculate :quarter stats': {'regexp': /^calculate (January|April|July|October) stats$/, 'callback': calculateFunction}
- * }
- ````
- *
- */
-//# sourceMappingURL=annyang.js.map
+
+     // first we make sure annyang started succesfully
+     if (annyang) {
+
+       // define the functions our commands will run.
+       var hello = function() {
+         document.getElementById('vresp').innerHTML = 'Hello';
+       };
+       var getStarted = function() {
+         document.getElementById('vresp').innerHTML = 'You are about to take your first steps, start with saying growth or culture.';
+       };
+       var growth = function() {
+         document.getElementById('vresp').innerHTML = 'We all need a little education and guidance when it comes to technology, Micheal is building the support system now.';
+       };
+       var life = function() {
+         document.getElementById('vresp').innerHTML = 'Yes, I can hear you. What is going on?';
+       };
+       var culture = function() {
+         document.getElementById('vresp').innerHTML = 'Kansas City is the most represented place in Kansas and Missouri. We arent limited to just one city, we are actually located in Overland Park.';
+       };
+       var micheal = function() {
+         window.location.href = 'http://michealsalmon.tumblr.com/';
+       };
+       var dashboard = function() {
+         window.location.href = 'https://mfglife.tumblr.com/';
+       };
+       var help = function() {
+         document.getElementById('vresp').innerHTML = 'Here is a basic list of commands to get you started, Hello, Get Started, Growth, Culture, Life, Micheal, Dashboard.';
+       };
+
+       // define our commands.
+       // * The key is the phrase you want your users to say.
+       // * The value is the action to do.
+       //   You can pass a function, a function name (as a string), or write your function as part of the commands object.
+       var commands = {
+         'hello (there)': hello,
+         'let\'s get started': getStarted,
+         'growth (say)': growth,
+         'life (manufacturing)': life,
+         'culture': culture,
+         'micheal (michael)': micheal,
+         'dashboard (portfolio)': dashboard,
+         'help (commands)': help,
+
+
+       };
+
+       // OPTIONAL: activate debug mode for detailed logging in the console
+       annyang.debug();
+
+       // Add voice commands to respond to
+       annyang.addCommands(commands);
+
+       // OPTIONAL: Set a language for speech recognition (defaults to English)
+       // For a full list of language codes, see the documentation:
+       // https://github.com/TalAter/annyang/blob/master/docs/FAQ.md#what-languages-are-supported
+       annyang.setLanguage('en');
+
+       // Start listening. You can call this here, or attach this call to an event, button, etc.
+       annyang.start();
+     } else {
+       $(document).ready(function() {
+         $('#unsupported').fadeIn('fast');
+       });
+     }
