@@ -667,9 +667,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          'my name is': actionOne,
          'play game': actionTwo,
          'save (continue)': actionThree,
-         'request an email': actionfour,
-
-
+         'request an email': actionFour,
        };
 
        // OPTIONAL: activate debug mode for detailed logging in the console
