@@ -648,7 +648,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          document.getElementById('vresp').innerHTML = 'Generating your new code now, remember to take a screenshot or you can say request an email for a direct copy.';
        };
        var actionFour = function() {
-         window.location.href = 'mailto:micheal.mfg@gmail.com?subject=I%20sclicked%20on%20contact%20and%20not%20sure%20what%20to%20do%20next&amp;body=I%20need%20to%20request%20a%20new%20code';
+         window.location.href = 'mailto:micheal.mfg@gmail.com?subject=I%20need%20to%20request%20a%20new%20code';
        };
 
        // define our commands.
