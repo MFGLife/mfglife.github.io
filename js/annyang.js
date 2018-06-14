@@ -2,11 +2,7 @@
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-//! annyang
-//! version : 2.6.1
-//! author  : Tal Ater @TalAter
-//! license : MIT
-//! https://www.TalAter.com/annyang/
+
 (function (root, factory) {
   'use strict';
 
@@ -25,15 +21,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })(typeof window !== 'undefined' ? window : undefined, function (root, undefined) {
   'use strict';
 
-  /**
-   * # Quick Tutorial, Intro and Demos
-   *
-   * The quickest way to get started is to visit the [annyang homepage](https://www.talater.com/annyang/).
-   *
-   * For a more in-depth look at annyang, read on.
-   *
-   * # API Reference
-   */
+
 
   var annyang;
 
@@ -223,7 +211,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           autoRestartCount += 1;
           if (autoRestartCount % 10 === 0) {
             if (debugState) {
-              logMessage('Speech Recognition is repeatedly stopping and starting. See http://is.gd/annyang_restarts for tips.');
+              logMessage('Speech Recognition is repeatedly stopping and starting. Contact Micheal for Restart Options');
             }
           }
           if (timeSinceLastStart < 1000) {
@@ -239,7 +227,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       recognition.onresult = function (event) {
         if (pauseListening) {
           if (debugState) {
-            logMessage('Speech heard, but annyang is paused');
+            logMessage('Speech heard, but MFGLife is paused');
           }
           return false;
         }
@@ -650,6 +638,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
        var help = function() {
          document.getElementById('vresp').innerHTML = 'Here is a basic list of commands to get you started, Hello, Get Started, Growth, Culture, Life, Micheal, Dashboard.';
        };
+       var actionOne = function() {
+         document.getElementById('vresp').innerHTML = 'Thank you, give me a second to load your profile.';
+       };
+       var actionTwo = function() {
+         document.getElementById('vresp').innerHTML = 'You have a few options to begin the game state. At any time say save, or continue to either halt your progress or retreive your place.';
+       };
+       var actionThree = function() {
+         document.getElementById('vresp').innerHTML = 'Generating your new code now, remember to take a screenshot or you can say request an email for a direct copy.';
+       };
+       var actionFour = function() {
+         window.location.href = 'mailto:micheal.mfg@gmail.com?subject=I%20sclicked%20on%20contact%20and%20not%20sure%20what%20to%20do%20next&amp;body=I%20need%20to%20request%20a%20new%20code';
+       };
 
        // define our commands.
        // * The key is the phrase you want your users to say.
@@ -664,6 +664,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          'micheal (michael)': micheal,
          'dashboard (portfolio)': dashboard,
          'help (commands)': help,
+         'my name is': actionOne,
+         'play game': actionTwo,
+         'save (continue)': actionThree,
+         'request an email': actionfour,
 
 
        };
