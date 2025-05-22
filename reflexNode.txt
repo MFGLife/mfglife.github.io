@@ -1,0 +1,199 @@
+Reflex Nodes
+
+# Revised and commented implementation for a GRPO-style LLM reward trainer
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.optim import Adam
+from collections import defaultdict
+
+# --- Configuration for reward weighting and training parameters ---
+class Config:
+    def __init__(self):
+        self.max_generation_length = 256
+        self.num_completions_per_question = 4
+        self.learning_rate = 1e-5
+        self.gamma = 0.99  # Discount factor (used for temporal rewards)
+        self.clip_ratio = 0.2  # Conceptual PPO-style clipping to stabilize updates
+        self.beta_kl = 0.01  # KL penalty to prevent deviation from initial policy
+        self.repetition_penalty_weight = 0.1
+        self.cosine_similarity_weight = 0.05
+        self.format_reward_weight = 0.5
+        self.reasoning_step_reward_weight = 0.3
+        self.correctness_reward_weight = 1.0  # Prioritize correctness
+
+config = Config()
+
+# --- Language Model placeholder (simplified transformer logic) ---
+class LanguageModel(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim):
+        super().__init__()
+        self.token_embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.transformer_block = nn.Linear(embedding_dim, hidden_dim)  # Replace with real Transformer
+        self.output_layer = nn.Linear(hidden_dim, vocab_size)
+
+    def forward(self, input_ids):
+        embeddings = self.token_embeddings(input_ids)
+        hidden_states = F.relu(self.transformer_block(embeddings))
+        logits = self.output_layer(hidden_states)
+        return logits
+
+    def generate(self, prompt_ids, max_length, num_samples=1):
+        # Basic looped generation (greedy+sampling)
+        generated_sequences = []
+        for _ in range(num_samples):
+            current_sequence = prompt_ids.tolist()
+            for _ in range(max_length - len(current_sequence)):
+                input_tensor = torch.tensor([current_sequence], dtype=torch.long)
+                logits = self.forward(input_tensor)[:, -1, :]
+                probs = F.softmax(logits, dim=-1)
+                next_token = torch.multinomial(probs, 1).item()
+                current_sequence.append(next_token)
+                if next_token == 50000:  # EOS token placeholder
+                    break
+            generated_sequences.append(torch.tensor(current_sequence, dtype=torch.long))
+        return generated_sequences
+
+    def get_log_probs(self, input_ids, output_ids):
+        logits = self.forward(input_ids)
+        log_probs = F.log_softmax(logits, dim=-1)
+        selected_log_probs = log_probs.gather(2, output_ids.unsqueeze(-1)).squeeze(-1)
+        return selected_log_probs
+
+# --- Reward Function ---
+def calculate_reward(prompt, completion, ground_truth, lang="en"):
+    reward = 0.0
+
+    if check_accuracy(completion, ground_truth):
+        reward += config.correctness_reward_weight
+    else:
+        reward -= config.correctness_reward_weight * 0.5
+
+    reward += config.format_reward_weight * check_format(completion)
+    reward += config.reasoning_step_reward_weight * check_reasoning_steps(completion)
+    reward += config.cosine_similarity_weight * calculate_conciseness_score(completion)
+    reward -= config.repetition_penalty_weight * calculate_repetition_penalty(completion)
+    reward += check_language_consistency(prompt, completion, lang)
+
+    return reward
+
+# --- Reward Subcomponents ---
+def check_accuracy(comp, gt):
+    return gt.lower() in comp.lower()
+
+def check_format(text):
+    score = 0
+    if "<think>" in text and "</think>" in text:
+        score += 0.5
+    if "<answer>" in text and "</answer>" in text:
+        score += 0.5
+    return score
+
+def check_reasoning_steps(text):
+    indicators = ["Step 1", "First,", "Next,", "Then,", "Therefore,", "Finally,"]
+    return min(sum(ind in text for ind in indicators) * 0.1, 1.0)
+
+def calculate_conciseness_score(text):
+    length = len(text.split())
+    if length < 50:
+        return 0.2
+    elif length < 200:
+        return 1.0
+    return 0.5 / (length / 200)
+
+def calculate_repetition_penalty(text):
+    word_freq = defaultdict(int)
+    for word in text.split():
+        word_freq[word] += 1
+    return max((v - 2) * 0.1 for v in word_freq.values() if v > 2) if any(v > 2 for v in word_freq.values()) else 0
+
+def check_language_consistency(prompt, completion, lang):
+    if lang == "en":
+        return 1.0 if "the" in completion.lower() and "le" not in completion.lower() else 0.0
+    return 1.0
+
+# --- GRPO Agent with Policy Snapshotting ---
+# --- 3. Reinforcement Learning Agent (GRPO - Gradient Regularized Policy Optimization) ---
+
+class GRPO_Agent:
+    def __init__(self, model, optimizer, tokenizer, vocab_size):
+        self.model = model
+        self.optimizer = optimizer
+        self.tokenizer = tokenizer
+        self.vocab_size = vocab_size
+        self.old_model_params = None  # Used to compute KL divergence with previous policy
+
+    def store_current_policy(self):
+        """Save a snapshot of current policy parameters for KL divergence regularization."""
+        self.old_model_params = {
+            name: param.clone().detach()
+            for name, param in self.model.named_parameters()
+        }
+
+    def get_old_log_probs(self, input_ids):
+        """Compute log probabilities using stored old policy parameters (for KL divergence)."""
+        if self.old_model_params is None:
+            raise ValueError("Old policy not stored. Call store_current_policy() before training.")
+
+        current_state_dict = self.model.state_dict()
+        self.model.load_state_dict(self.old_model_params)
+
+        with torch.no_grad():
+            log_probs = self.model.get_log_probs(input_ids, input_ids)
+
+        self.model.load_state_dict(current_state_dict)  # Restore new policy
+        return log_probs
+
+    def compute_kl_divergence(self, current_log_probs, old_log_probs):
+        """Compute the mean KL divergence between new and old log probabilities."""
+        return (current_log_probs - old_log_probs).exp().log().mean()
+
+    def compute_policy_loss(self, log_probs, old_log_probs, rewards):
+        """Compute clipped policy loss similar to PPO, penalized by KL divergence."""
+        # Compute importance sampling ratio
+        ratio = torch.exp(log_probs - old_log_probs)  # pi_new / pi_old
+        clipped_ratio = torch.clamp(ratio, 1.0 - config.clip_ratio, 1.0 + config.clip_ratio)
+        
+        # Clipped surrogate loss (negative expected reward)
+        surrogate = torch.min(ratio * rewards, clipped_ratio * rewards)
+        policy_loss = -torch.mean(surrogate)
+        
+        # KL divergence for regularization
+        kl_div = self.compute_kl_divergence(log_probs, old_log_probs)
+        kl_penalty = config.beta_kl * kl_div
+
+        return policy_loss + kl_penalty, kl_div
+
+    def update_policy(self, input_ids, rewards):
+        """
+        Performs a single gradient update step using computed rewards.
+
+        Args:
+            input_ids (Tensor): Input token IDs (batch_size x seq_len)
+            rewards (Tensor): Computed scalar rewards for each sequence (batch_size)
+        """
+        log_probs = self.model.get_log_probs(input_ids, input_ids).mean(dim=1)  # mean log-probs per sequence
+        old_log_probs = self.get_old_log_probs(input_ids).mean(dim=1)  # aligned to current sequence length
+
+        loss, kl_div = self.compute_policy_loss(log_probs, old_log_probs, rewards)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        return loss.item(), kl_div.item()
+
+def calculate_reward_with_trace(prompt, completion, ground_truth, lang="en"):
+    trace = {}
+
+    trace['correctness'] = config.correctness_reward_weight * (1.0 if check_accuracy(completion, ground_truth) else -0.5)
+    trace['format'] = config.format_reward_weight * check_format(completion)
+    trace['reasoning'] = config.reasoning_step_reward_weight * check_reasoning_steps(completion)
+    trace['conciseness'] = config.cosine_similarity_weight * calculate_conciseness_score(completion)
+    trace['repetition_penalty'] = -config.repetition_penalty_weight * calculate_repetition_penalty(completion)
+    trace['language_consistency'] = check_language_consistency(prompt, completion, lang)
+
+    total_reward = sum(trace.values())
+    return total_reward, trace
+
